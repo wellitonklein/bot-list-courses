@@ -1,0 +1,14 @@
+{
+  "name": "maringa-cursos",
+  "version": "1.0.0",
+  "description": "Lista de cursos em Maringá",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Welliton Klein <welliton.dev@gmail.com>",
+  "license": "ISC",
+  "dependencies": {
+    "puppeteer": "^1.15.0"
+  }
+}
