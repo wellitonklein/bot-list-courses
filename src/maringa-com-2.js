@@ -2,12 +2,11 @@ const puppeteer = require('puppeteer')
 
 ;(async () => {
     const browser = await puppeteer.launch({
-        headless: false,
+        headless: true,
         devtools: false
     })
     const page = await browser.newPage()
     const baseUrl = 'http://www.maringa.com/cursos/index.php?nome=&dataIniMat=&dataFim=&pagina=1'
-    let urlCurrent = `${baseUrl}`
     let nextUrl = ''
     let lastUrl = ''
     let data = []
@@ -19,8 +18,8 @@ const puppeteer = require('puppeteer')
         )
 
         const titleSelector = '#conteudo_secao > div.conteudo_pagina > div > h2 > a'        
-        const btnNextSelector = '#paginacao > a:nth-child(11)'
-        const btnLastSelector = '#paginacao > a:nth-child(12)'
+        const btnNextSelector = '#paginacao > a:nth-child(9)'
+        const btnLastSelector = '#paginacao > a:nth-child(10)'
 
         await page.waitForSelector(btnLastSelector)
         lastUrl = await page.evaluate(btnLastSelector => {
@@ -45,32 +44,36 @@ const puppeteer = require('puppeteer')
                     }
                 })
             }, titleSelector)
-            data.push(detail)
+            data.push(...detail)
 
             nextUrl = await page.evaluate(btnNextSelector => {
                 const anchors = Array.from(document.querySelectorAll(btnNextSelector))
                 return anchors.map((anchor) => anchor.href)
             }, btnNextSelector)     
             
-            if (String(lastUrl) == String(nextUrl)) {
+            if (String(lastUrl) === String(nextUrl)) {
                 console.log('> Chegou ao final desse site.')
                 break;
             }
         }
 
-        data = {
-            site: baseUrl,
-            ...data
-        }
-        console.log('data', data)
-
         await page.close()
         await browser.close()
+
+        let dataFormatted = ''
+        for (let i = 0; i <= data.length; i++) {
+            try {
+                dataFormatted = `${dataFormatted}\n*${data[i].title}*\n${data[i].url}`
+            } catch (e) {
+
+            }
+        }
+
+        return {
+            text: dataFormatted,
+            site: baseUrl
+        }
     } catch (error) {
         console.log('Oops: ', error)
     }
 })()
-
-async function getData () {
-
-}
