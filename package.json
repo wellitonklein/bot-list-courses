@@ -9,6 +9,7 @@
   "author": "Welliton Klein <welliton.dev@gmail.com>",
   "license": "ISC",
   "dependencies": {
+    "axios": "^0.18.0",
     "puppeteer": "^1.15.0"
   }
 }

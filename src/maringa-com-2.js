@@ -1,6 +1,6 @@
 const puppeteer = require('puppeteer')
 
-;(async () => {
+module.exports = async () => {
     const browser = await puppeteer.launch({
         headless: true,
         devtools: false
@@ -17,7 +17,7 @@ const puppeteer = require('puppeteer')
             { waitUntil: 'domcontentloaded' }
         )
 
-        const titleSelector = '#conteudo_secao > div.conteudo_pagina > div > h2 > a'        
+        const titleSelector = '#conteudo_secao > div.conteudo_pagina > div > h2 > a'
         const btnNextSelector = '#paginacao > a:nth-child(9)'
         const btnLastSelector = '#paginacao > a:nth-child(10)'
 
@@ -25,14 +25,14 @@ const puppeteer = require('puppeteer')
         lastUrl = await page.evaluate(btnLastSelector => {
             const anchors = Array.from(document.querySelectorAll(btnLastSelector))
             return anchors.map((anchor) => anchor.href)
-        }, btnLastSelector)  
+        }, btnLastSelector)
 
         console.log('> Iniciando a varredura')
-        while (true) {            
+        while (true) {
             await page.goto(
                 `${nextUrl || baseUrl}`,
                 { waitUntil: 'domcontentloaded' }
-            )            
+            )
             await page.waitForSelector(titleSelector)
 
             const detail = await page.evaluate(titleSelector => {
@@ -49,8 +49,8 @@ const puppeteer = require('puppeteer')
             nextUrl = await page.evaluate(btnNextSelector => {
                 const anchors = Array.from(document.querySelectorAll(btnNextSelector))
                 return anchors.map((anchor) => anchor.href)
-            }, btnNextSelector)     
-            
+            }, btnNextSelector)
+
             if (String(lastUrl) === String(nextUrl)) {
                 console.log('> Chegou ao final desse site.')
                 break;
@@ -76,4 +76,4 @@ const puppeteer = require('puppeteer')
     } catch (error) {
         console.log('Oops: ', error)
     }
-})()
+}
