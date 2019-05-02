@@ -10,6 +10,7 @@ module.exports = async () => {
     let nextUrl = ''
     let lastUrl = ''
     let data = []
+    let currentPage = 1
 
     try {
         await page.goto(
@@ -27,7 +28,7 @@ module.exports = async () => {
             return anchors.map((anchor) => anchor.href)
         }, btnLastSelector)
 
-        console.log('> Iniciando a varredura')
+        console.log('> #Iniciando a coleta')
         while (true) {
             await page.goto(
                 `${nextUrl || baseUrl}`,
@@ -40,11 +41,12 @@ module.exports = async () => {
                 return anchors.map((anchor) => {
                     return {
                         title: anchor.textContent,
-                        url: anchor.href
+                        url: `${anchor.href}\n`
                     }
                 })
             }, titleSelector)
             data.push(...detail)
+            console.log(`> Coletou do site ${currentPage++}`)
 
             nextUrl = await page.evaluate(btnNextSelector => {
                 const anchors = Array.from(document.querySelectorAll(btnNextSelector))
@@ -52,7 +54,7 @@ module.exports = async () => {
             }, btnNextSelector)
 
             if (String(lastUrl) === String(nextUrl)) {
-                console.log('> Chegou ao final desse site.')
+                console.log('> #Coleta finalizada')
                 break;
             }
         }
@@ -69,6 +71,7 @@ module.exports = async () => {
             }
         }
 
+        console.log('> #Fazendo upload para o Banco de Dados')
         return {
             text: dataFormatted,
             site: baseUrl
